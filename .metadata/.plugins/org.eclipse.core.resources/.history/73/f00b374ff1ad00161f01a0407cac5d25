@@ -1,0 +1,20 @@
+
+public class WriteBuffer {
+	
+	private boolean tso;
+	private String[] buffer;
+	
+	public WriteBuffer(boolean tso) {
+		
+		this.tso = tso;
+	}
+	
+	public int load(int x) {
+		return 0;
+		
+		
+	}
+	
+	
+
+}

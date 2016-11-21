@@ -1,0 +1,11 @@
+
+public class WriteBuffer {
+	
+	private boolean tso;
+	
+	public WriteBuffer(boolean tso) {
+		
+		this.tso = tso;
+	}
+
+}

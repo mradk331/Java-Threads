@@ -1,0 +1,26 @@
+package refactortests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+import reflection.*;
+
+public class ExtractMethod {
+
+	
+	@Before
+	public void setUp() throws Exception {
+		
+		Asst2TestDriver testDriver = new Asst2TestDriver();
+		Inspector test = new Inspector();
+	}
+	
+	@Test
+	public void test() {
+		
+		
+		
+	}
+
+}

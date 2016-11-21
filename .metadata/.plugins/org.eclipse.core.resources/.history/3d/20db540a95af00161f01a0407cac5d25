@@ -1,0 +1,54 @@
+import java.util.ArrayList;
+
+public class WriteBuffer {
+	
+	private boolean tso;
+	private ArrayList<MixedBuffer> buffer = new  ArrayList<MixedBuffer>();
+	
+	public WriteBuffer(boolean tso) {
+		
+		this.tso = tso;
+	}
+	
+	public void ChangeBuffer( boolean x )
+	{
+		this.tso = x;
+		
+	}
+	
+	public String load(String x) throws Exception {
+		
+		//try {
+			for (int n = 0; n < buffer.size(); n++) {
+				
+				if( buffer.get(n).variable == x)
+					return x;
+				
+				else {
+					throw new Exception();
+				}
+
+			}
+			return x;
+			
+		
+			
+		//}
+		
+		//catch (Exception e) {
+		//	System.out.println("NotInBufferException: " + e);
+		//}
+		
+		
+		
+	}
+	
+	public void store(String x, int v) {
+	
+		MixedBuffer temp = new MixedBuffer(x, v);
+		buffer.add(temp);	
+		
+	}
+	
+	
+}

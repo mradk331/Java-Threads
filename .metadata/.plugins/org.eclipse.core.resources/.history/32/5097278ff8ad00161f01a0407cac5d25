@@ -1,0 +1,40 @@
+import java.util.ArrayList;
+
+public class WriteBuffer {
+	
+	private boolean tso;
+	private ArrayList buffer = new ArrayList();
+	
+	public WriteBuffer(boolean tso) {
+		
+		this.tso = tso;
+	}
+	
+	public String load(String x) {
+		
+		try {
+			
+			if (buffer.contains(x)) {
+				
+				return x;
+			}
+
+			
+		}
+		
+		catch (Exception e) {
+			System.out.println("NotInBufferException: " + e);
+		}
+		
+		return "ass";
+		
+		
+	}
+	
+	public void store(String x, String v) {
+		
+	}
+	
+	
+
+}

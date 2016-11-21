@@ -1,0 +1,233 @@
+import java.util.*;
+import java.lang.reflect.*;
+
+/*
+ * Class performs a complete introspection of an object at runtime
+ * returning names of declaring class, immediate superclass, the interfaces class
+ * implements, the methods the class declares, constructors it declares, and
+ * fields it declares.
+ */
+public class Inspector {
+
+	public void inspect(Object obj, boolean recursive) {
+		
+		Class specifiedObject = obj.getClass();
+		
+		//Print name of declaring class
+		System.out.println("Name of the declaring class: " + specifiedObject.getName());
+		
+		//Print name of the immediate superclass
+		System.out.println("Name of the immediate superclass: " + specifiedObject.getSuperclass().getName());
+		
+		//Get names of interfaces class implements
+		findInterfaces(specifiedObject);
+		
+		//Get methods the class declares
+		findMethods(specifiedObject);
+		
+		//Get constructors the class declares
+		findConstructors(specifiedObject);
+		
+		//Get fields the class declares
+		findFields(obj, specifiedObject, recursive);
+		
+		
+		
+	}
+	
+	public void findInterfaces(Class specifiedObject) {
+		
+		//Store the interfaces into an array
+		Class[] objectInterfaces = specifiedObject.getInterfaces();
+		
+		//Check that there are interfaces contained within the object class
+		if (objectInterfaces.length > 0) {
+			
+			//Print out all interfaces class implements
+			for (int i = 0; i < objectInterfaces.length; i++) {
+				
+				System.out.println("Interface class implements: " + objectInterfaces[i].getName());
+			}
+		}
+		
+		else {
+			System.out.println("\n---Class doesn't implement any interfaces---");
+		}
+	}
+	
+	public void findMethods(Class specifiedObject) {
+		
+		//Get an array of the declared methods
+		Method[] objectMethods = specifiedObject.getDeclaredMethods();
+		
+		//Check that there is declared methods
+		if (objectMethods.length > 0) {
+			
+			System.out.println("\n---Methods that the class declares---");
+			
+			for (int i = 0; i < objectMethods.length; i++) {
+							
+				
+				System.out.println("\nDeclared method: " + objectMethods[i].getName());
+
+				Class[] exceptions = objectMethods[i].getExceptionTypes();
+				Class[] parameters = objectMethods[i].getParameterTypes();
+				
+				
+				//Check if there is any exceptions
+				if (exceptions.length > 0) {
+					
+					System.out.print("Exceptions thrown: ");
+					//Print out exceptions
+					for (Class anException : exceptions) {
+						
+						System.out.print(anException.getSimpleName() + " ");
+					}		
+					
+					System.out.println();
+				}
+				
+				else {
+					System.out.println("There are no exceptions found");
+				}
+				
+				
+				if (parameters.length > 0) {
+					
+					System.out.print("Parameter types: ");
+					
+					for (Class aParameter: parameters) {
+						
+						System.out.print(aParameter.getSimpleName() + " ");
+						
+					}
+					
+					System.out.println();
+				}
+				
+				else {
+					System.out.println("There are no parameters found");
+				}
+				
+				
+				
+				//Print return types for current method
+				System.out.println("Return types: " + objectMethods[i].getReturnType());
+
+				//Print the modifiers
+				System.out.println("Modifiers: " + Modifier.toString(objectMethods[i].getModifiers()));
+			}
+			
+		}
+		
+		else {
+			System.out.println("\n---Class doesn't have any declared methods---");
+		}
+	}
+	
+	public void findConstructors(Class specifiedObject) {
+		
+		//Obtaining constructors array
+		Constructor[] objectConstructors = specifiedObject.getDeclaredConstructors();
+		
+		//Check if there are any
+		if (objectConstructors.length > 0) {
+			
+			System.out.println("\n---Constructors that the class declares---");
+		
+			for (int i = 0; i < objectConstructors.length; i++) {
+			
+				System.out.println("\nDeclared constructor: " + objectConstructors[i].getName());
+				
+				//have to use type under constructors
+				Type[] parameters = objectConstructors[i].getTypeParameters();
+				
+				
+				//Check if parameters exist
+				if (parameters.length > 0) {
+					
+					System.out.print("Parameter types: ");
+					
+					for (Type aParameter: parameters) {
+						
+						System.out.print(aParameter.toString() + " ");
+						
+					}
+					
+					System.out.println();
+				}
+				
+				else {
+					System.out.println("There are no parameters found");
+				}
+				
+				//Print modifiers
+				System.out.println("Modifiers: " + Modifier.toString(objectConstructors[i].getModifiers()));
+			
+			}
+		}
+		
+		else {
+			System.out.println("\n---Class doesn't have any declared constructors---");
+		}
+		
+	}
+	
+	public void findFields(Object obj, Class classObject, booleanrecursive) {
+		
+		//Declared fields array
+		Field[] objectFields = classObject.getDeclaredFields();
+		
+		//Check if there are fields to inspect
+		if (objectFields.length > 0) {
+			
+			System.out.println("\n---Fields that the class declares---");
+			
+			for (int i = 0; i < objectFields.length; i++) {
+				
+				//Allowing the field to be accessible
+				objectFields[i].setAccessible(true);
+				
+				try {
+				
+					//Check whether field is an array or another type
+					if (objectFields[i].getType().isArray()) {
+					
+						//Print name, type and modifiers
+						System.out.println("\nDecared Field: " + objectFields[i].getName());
+					
+						System.out.println("Field type: " + objectFields[i].getType().getComponentType());
+					
+						System.out.println("Modifiers: " + Modifier.toString(objectFields[i].getModifiers()));
+					
+				
+					}
+				
+					//If not array get name object type and modifiers
+					else {
+					
+						System.out.println("\nDeclared Field: " + objectFields[i].getName() + " has hash code: " +
+											objectFields[i].get(obj));
+					
+						System.out.println("Field type: " + objectFields[i].getType().getComponentType());
+					
+						System.out.println("Modifiers: " + Modifier.toString(objectFields[i].getModifiers()));					
+					}
+				}
+				
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				//If recursive is true and field is an object, then it must be fully inspected
+				if (recursive && !objectFields[i].getType().isPrimitive()) {
+					
+				}
+			}
+		}
+		
+		else {
+			System.out.println("\n---Class doesn't have any declared fields---");
+		}
+	}
+}

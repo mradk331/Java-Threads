@@ -1,0 +1,17 @@
+
+public class MemoryAgent implements Runnable {
+	
+	private WriteBuffer writeBuffer;
+	
+	public MemoryAgent(WriteBuffer writeBuffer){
+		
+		this.writeBuffer = writeBuffer;
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+		
+	}
+
+}

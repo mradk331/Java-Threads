@@ -1,0 +1,25 @@
+package refactortests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+import default package.*;
+
+public class ExtractMethod {
+
+	
+	@Before
+	public void setUp() throws Exception {
+		
+		Inspector test = new Inspector();
+	}
+	
+	@Test
+	public void test() {
+		
+		
+		
+	}
+
+}

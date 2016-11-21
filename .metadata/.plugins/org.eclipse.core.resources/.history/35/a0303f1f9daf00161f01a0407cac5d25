@@ -1,0 +1,18 @@
+import java.util.ArrayList;
+
+public class MainMemory {
+	
+	ArrayList mainMemory = new ArrayList();
+	
+	public int load(String x) {
+		return -1;
+	}
+	
+	
+	public void store(String x, int v) {
+		
+		MixedBuffer value = new MixedBuffer(x,v);
+		
+	}
+
+}

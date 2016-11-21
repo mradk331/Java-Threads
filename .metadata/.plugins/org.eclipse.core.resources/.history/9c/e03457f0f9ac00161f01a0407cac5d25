@@ -1,0 +1,200 @@
+import java.lang.reflect.Field;
+import java.util.IdentityHashMap;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileOutputStream;
+
+public class ObjectCreator {
+	
+	private static String ANSWER = "yes";
+	
+	public static void main(String args[]) throws Exception {
+		
+		if ((args.length < 2) || (args.length > 3)) {
+			System.out.println("Usage: java ObjectCreator Sender portNumber");
+			System.out.println("Usage: java ObjectCreator Receiver hostname portNumber");
+		}
+		else{
+			
+			
+			if (args[0].equals("Sender")) {
+				
+				while (ANSWER.equalsIgnoreCase("yes")) {
+				
+
+					Object selectedObject = null;
+					
+					System.out.println("Please select an object to be created: \n(Type input number to select)\n");
+					printSelectionObjects();
+					
+					BufferedReader input = new BufferedReader (new InputStreamReader(System.in));
+					String selection = input.readLine(); 
+					
+					switch(Integer.parseInt(selection)) {
+					
+					case 1:
+						
+						VehicleSpecifications specs = new VehicleSpecifications();
+						setPrimitiveValues(specs);
+						selectedObject = specs;
+						break;
+					
+					case 2:
+						
+						Vehicle vehicleObj = new Vehicle();
+						setPrimitiveValues(vehicleObj.aVehicle);
+						selectedObject = vehicleObj;
+						break;
+						
+					case 3:
+						
+						VehicleYears yearsObj = new VehicleYears();
+						
+						yearsObj.vehicleYears = new int[10];
+						
+						int counter = 0;
+						while (counter < yearsObj.vehicleYears.length){
+							
+							//Set initial primitive values
+							yearsObj.vehicleYears[counter] = counter;
+							System.out.println("Current array value: " + yearsObj.vehicleYears[counter] + 
+									" at element " + counter);
+							
+							System.out.println("Please select a new integer value: ");
+							String value = input.readLine();
+							yearsObj.vehicleYears[counter] = Integer.parseInt(value);
+							counter++;
+						}
+						selectedObject = yearsObj;
+						break;
+						
+					case 4:
+						
+						VehicleSpecSheets specSheetObj = new VehicleSpecSheets();
+						selectedObject = specSheetObj;
+						break;
+					
+					case 5: 
+						
+						VehicleDealership dealershipObj = new VehicleDealership();
+						selectedObject = dealershipObj;
+						break;
+						
+					default:
+						System.out.println("Did not select a valid option");
+						break;
+							
+						
+					}
+					
+					String senderDocument = "senderDoc.xml";
+					
+					Document document = Serializer.serialize(selectedObject, new Document(new Element("serialized")),
+							new IdentityHashMap());
+					
+					XMLOutputter fmt = new XMLOutputter();
+					fmt.output(document,  new FileOutputStream(senderDocument));
+					
+					int portNumber = Integer.parseInt(args[1]);
+					SenderSocket sender = new SenderSocket(portNumber);
+					sender.establishConnection(senderDocument);
+					
+					System.out.println("Would you like to select another object to be created ? (Answer yes if you would, any other keyword to cancel)");
+					ANSWER = input.readLine();
+				}
+			}
+			
+			else if (args[0].equals("Receiver")) {
+				
+				String receiverDocument = "receiverDoc.xml";
+				
+				String hostAddress = args[1];
+				int portNumber = Integer.parseInt(args[2]);
+				ReceiverSocket receiver = new ReceiverSocket(hostAddress, portNumber);
+				receiver.receiveConnection("./" + receiverDocument);
+				
+				//Create a document
+				SAXBuilder builder = new SAXBuilder(false);
+				Document document = builder.build(receiverDocument);
+				
+				//Deserialize object
+				Object deserializedObj = Deserializer.deserialize(document);
+				
+				//Visualize result
+				Visualizer visualizer = new Visualizer();
+				
+				visualizer.visualize(deserializedObj, true);
+				visualizer.visualizeXML(receiverDocument);
+				
+			}
+			
+			else {
+				System.out.println("Incorrect program argument, please provide Sender or Receiver");
+			}
+			
+		}
+		
+
+
+
+	}
+	
+	//Allows user to set instance variables of simple object
+	private static void setPrimitiveValues(Object obj) throws Exception {
+		
+		Class classObject = obj.getClass();
+		Field[] fieldObject = classObject.getFields(); //Gets instance variable fields
+		Field field;
+		String fieldType;
+		
+		System.out.println("Please set values for the simple object instance variables");
+		
+		int counter = 0;
+		
+		//Loop each field, allowing user to set its value
+		while (counter < fieldObject.length) {
+			
+			fieldObject[counter].setAccessible(true); //Give access to fields
+			
+			System.out.println("Field name: " + fieldObject[counter].getName());
+			
+			//Get the field type so user knows what value to enter
+			field = classObject.getDeclaredField(fieldObject[counter].getName());
+			fieldType = field.getType().toString();
+			
+			System.out.println("Field type: " + fieldType);
+			
+			System.out.println("Enter new value: ");
+			BufferedReader input = new BufferedReader (new InputStreamReader(System.in));
+			String value = input.readLine(); 
+			
+			//This is assuming simple class always has int and char primitives
+			if (fieldType.equals("int")) {
+				field.set(obj, Integer.parseInt(value));
+			}
+			
+			else {
+				field.set(obj, value.charAt(0));
+			}
+			counter++;
+		}
+		
+		
+	}
+	
+	private static void printSelectionObjects() {
+		
+		System.out.println("1. A simple object with only primitives for instance variables\n"
+				+ "2. An object that contains references to other objects\n"
+				+ "3. An object that contains an array of primitives\n"
+				+ "4. An object that contains an array of object references\n"
+				+ "5. An object that uses an instance of one of Java's collection classes to refer to several other objects");
+	}
+	
+}

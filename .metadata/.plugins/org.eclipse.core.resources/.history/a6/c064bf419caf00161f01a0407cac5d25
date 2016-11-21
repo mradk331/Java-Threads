@@ -1,0 +1,69 @@
+import java.util.ArrayList;
+
+public class WriteBuffer {
+	
+	private boolean tso;
+	private ArrayList<MixedBuffer> buffer = new  ArrayList<MixedBuffer>();
+	
+	public WriteBuffer(boolean tso) {
+		
+		this.tso = tso;
+	}
+	
+	public int load(String x) throws Exception {
+		
+			for (int n = 0; n < buffer.size(); n++) {
+				
+				if(buffer.get(n).variable == x)
+					return buffer.get(n).value;
+
+			}
+
+			//Variable doesn't exist in buffer
+			return -1;
+		
+		
+	}
+	
+	public void store(String x, int v) {
+		
+		//Object representing variable and its associated value
+		MixedBuffer temp = new MixedBuffer(x, v);
+		
+		if (buffer.isEmpty()) {
+			buffer.add(temp);
+		}
+
+		else {
+			
+			//If tso add using FIFO
+			if (tso) {
+				
+				buffer.add(temp);	
+			}
+			
+			//Otherwise we add using FIFO per variable basis
+			else {
+				boolean inBuffer = false;
+				
+				for (int i = 0; i < buffer.size(); i++) {
+					
+					if (buffer.get(i).variable == x) {
+						inBuffer = true;
+						break; //If in buffer, break out of loop
+					}
+				}
+				
+				if (inBuffer) {
+					buffer.add(temp);
+				}
+				
+				else {
+					buffer.add(0, temp);
+				}
+			}
+		}
+	}
+	
+	
+}

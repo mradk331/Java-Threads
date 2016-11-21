@@ -1,0 +1,24 @@
+/*
+ * Class performs a complete introspection of an object at runtime
+ * returning names of declaring class, immediate superclass, the interfaces class
+ * implements, the methods the class declares, constructors it declares, and
+ * fields it declares.
+ */
+public class Inspector {
+
+	public void inspect(Object obj, boolean recursive) {
+		
+		Class specifiedObject = obj.getClass();
+		
+		//Print name of declaring class
+		System.out.println("Name of the declaring class: " + specifiedObject.getName());
+		
+		//Print name of the immediate superclass
+		System.out.println("Name of the immediate superclass: " + specifiedObject.getSuperclass().getName());
+		
+		
+		
+		
+		
+	}
+}

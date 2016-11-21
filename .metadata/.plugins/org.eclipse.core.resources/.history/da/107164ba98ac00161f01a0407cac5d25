@@ -1,0 +1,58 @@
+/*
+ * Establishes a network connection sending byte stream data (Serialized document) to a user who accepted
+ * the connection and is receiving
+ */
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import org.jdom2.*;
+import org.jdom2.input.SAXBuilder;
+
+public class SenderSocket {
+	
+	private int port = 1234;
+	
+	public SenderSocket(int providedPort) {
+		port = providedPort;
+	}
+
+	public void establishConnection(String XMLFile) throws IOException {
+		
+		ServerSocket serverSocket = new ServerSocket(port);
+		
+		System.out.println("Awaiting connection...");
+		
+		//Waits for a connection to arrive
+		Socket socketConnection = serverSocket.accept();
+		
+		System.out.println("Connection " + socketConnection.getInetAddress().toString() + " established");
+		
+		
+		//Store the file into the buffered input stream
+		File documentJDOM = new File(XMLFile);
+		BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(documentJDOM));
+		
+		//Read file into the buffer
+		byte[] buffer = new byte[(int) documentJDOM.length()];
+		bufferedInputStream.read(buffer, 0, buffer.length);
+		
+		//Get output stream for the connected server
+		OutputStream outputStream = socketConnection.getOutputStream();
+		
+		//Write the file over network connection
+		outputStream.write(buffer, 0, buffer.length);
+		outputStream.flush(); //Flush out any bytes out of the stream
+		socketConnection.close(); //Close connection after file transfer is done
+		
+		System.out.println("Connection has been closed");
+		
+		
+		
+	}
+}

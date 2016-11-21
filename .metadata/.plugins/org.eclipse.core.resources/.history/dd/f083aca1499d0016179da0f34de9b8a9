@@ -1,0 +1,117 @@
+import java.util.*;
+import java.lang.reflect.*;
+
+/*
+ * Class performs a complete introspection of an object at runtime
+ * returning names of declaring class, immediate superclass, the interfaces class
+ * implements, the methods the class declares, constructors it declares, and
+ * fields it declares.
+ */
+public class Inspector {
+
+	public void inspect(Object obj, boolean recursive) {
+		
+		Class specifiedObject = obj.getClass();
+		
+		//Print name of declaring class
+		System.out.println("Name of the declaring class: " + specifiedObject.getName());
+		
+		//Print name of the immediate superclass
+		System.out.println("Name of the immediate superclass: " + specifiedObject.getSuperclass().getName());
+		
+		//Get names of interfaces class implements
+		findInterfaces(specifiedObject);
+		
+		//Get methods the class declares
+		findMethods(specifiedObject);
+		
+		
+		
+	}
+	
+	public void findInterfaces(Class specifiedObject) {
+		
+		//Store the interfaces into an array
+		Class[] objectInterfaces = specifiedObject.getInterfaces();
+		
+		//Check that there are interfaces contained within the object class
+		if (objectInterfaces.length > 0) {
+			
+			//Print out all interfaces class implements
+			for (int i = 0; i < objectInterfaces.length; i++) {
+				
+				System.out.println("Interface class implements: " + objectInterfaces[i].getName());
+			}
+		}
+		
+		else {
+			System.out.println("---Class doesn't implement any interfaces---");
+		}
+	}
+	
+	public void findMethods(Class specifiedObject) {
+		
+		//Get an array of the declared methods
+		Method[] objectMethods = specifiedObject.getDeclaredMethods();
+		
+		//Check that there is declared methods
+		if (objectMethods.length > 0) {
+			
+			System.out.println("\n---Methods that the class declares---");
+			
+			for (int i = 0; i < objectMethods.length; i++) {
+							
+				
+				System.out.println("\nDeclared method: " + objectMethods[i].getName());
+
+				Class[] exceptions = objectMethods[i].getExceptionTypes();
+				Class[] parameters = objectMethods[i].getParameterTypes();
+				
+				
+				//Check if there is any exceptions
+				if (exceptions.length > 0) {
+					
+					System.out.print("Exceptions thrown: ");
+					//Print out exceptions
+					for (Class anException : exceptions) {
+						
+						System.out.print(anException.getSimpleName() + " ");
+					}		
+					
+				}
+				
+				else {
+					System.out.println("There are no exceptions found");
+				}
+				
+				/*
+				if (parameters.length > 0) {
+					
+					for (int j = 0; j < parameters.length; j++) {
+						
+						System.out.println("Parameter types: " + parameters[i].getSimpleName());
+						
+					}
+					
+				}
+				
+				else {
+					System.out.print("No parameters have been found");
+				}
+				*/
+				
+				
+				//Print return types for current method
+				System.out.println("Return types: " + objectMethods[i].getReturnType());
+
+				//Print the modifiers
+				System.out.println("Modifiers: " + Modifier.toString(objectMethods[i].getModifiers()));
+			}
+			
+		}
+		
+		else {
+			System.out.println("\n---Class doesn't have any declared methods---");
+		}
+	}
+}
